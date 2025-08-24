@@ -108,6 +108,7 @@ elseif(TARGET_MCU STREQUAL "G474")
     )
     set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/stm32g474ceux_flash.ld)
     set(STARTUP_ASSEMBLY_FILE ./src/stm32g4xx/startup_stm32g474xx.s)
+    set(SOURCE src/fonts/font_system.c)
 else()
     message(FATAL_ERROR "Unsupported MCU type: ${TARGET_MCU}")
 endif()
@@ -127,6 +128,7 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
         ${STARTUP_ASSEMBLY_FILE}
+        ${SOURCE}
         ./src/stm32g4xx/stm32g4xx_it.c
         ./src/stm32g4xx/system_stm32g4xx.c
         ./src/stm32g4xx/sysmem.c
