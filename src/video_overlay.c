@@ -9,10 +9,12 @@
 #include "system.h"
 #include "main.h"
 #include "video_gen.h"
-#include "fonts/font_bf_default.h"
 #include "logo/logo.h"
 #include "canvas_char.h"
 #include "video_graphics.h"
+#if defined(LOW_RAM)
+#include "fonts/font_bf_default.h"
+#endif
 
 #define TIM2_TICK_MS        (1e6f / 170000000)
 
@@ -105,7 +107,7 @@ void video_overlay_init(void)
     LL_TIM_CC_EnableChannel(TIM3, LL_TIM_CHANNEL_CH1);
 
     LL_DAC_Enable(DAC1, LL_DAC_CHANNEL_1);
-    LL_DAC_ConvertData12RightAligned(DAC1, LL_DAC_CHANNEL_1, DAC12BIT_FROM_MV(300));
+    LL_DAC_ConvertData12RightAligned(DAC1, LL_DAC_CHANNEL_1, VIDE_DETECTION_MV);
     LL_DAC_TrigSWConversion(DAC1, LL_DAC_CHANNEL_1);
 
     LL_DAC_Enable(DAC3, LL_DAC_CHANNEL_1);
