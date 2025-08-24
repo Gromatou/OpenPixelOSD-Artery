@@ -77,6 +77,7 @@ typedef enum {
 #define DAC8BIT_TO_MV(value)      (((uint32_t)(value) * 3300) / 255)
 #define DAC8BIT_FROM_MV(mV)       (((uint32_t)(mV) * 255) / 3300)
 
+#define VIDE_DETECTION_MV       (DAC12BIT_TO_MV(250)) // 250 mV for video detection
 
 void gpio_init(void);
 
