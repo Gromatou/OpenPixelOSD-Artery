@@ -388,7 +388,6 @@ bool vtx_msp_handle_msp(uint8_t owner, uint16_t msp_cmd, uint16_t data_size, con
     case MSP_VTXTABLE_BAND:
     case MSP_VTXTABLE_POWERLEVEL:
     default:
-        printf("vtx_msp_handle_msp_v1: cmd=%d size=%d\r\n", msp_cmd, data_size);
         return false;
     }
 }
