@@ -3,17 +3,34 @@ name: build-ubuntu
 env:
   BUILD_TYPE: Release
 
-# Triggers the workflow on push or pull request events
 on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        mcu: [ G431, G474 ]
+        include:
+          # ---- STM32G431 ----
+          - mcu: STM32G431
+            variant_name: default
+            variant_flag: ""
+            variant_suffix: ""
+          - mcu: STM32G431
+            variant_name: VTX
+            variant_flag: "-DBUILD_VARIANT=VTX"
+            variant_suffix: "_VTX"
+
+          # ---- STM32G474 ----
+          - mcu: STM32G474
+            variant_name: default
+            variant_flag: ""
+            variant_suffix: ""
+          - mcu: STM32G474
+            variant_name: VTX
+            variant_flag: "-DBUILD_VARIANT=VTX"
+            variant_suffix: "_VTX"
 
     steps:
     - name: Checkout
@@ -28,22 +45,22 @@ jobs:
         release: '14.2.Rel1' # <-- The compiler release to use
 
     - name : Create build directory
-      run: mkdir -p build-${{ matrix.mcu }}
+      run: mkdir -p build-${{ matrix.mcu }}-${{ matrix.variant_name }}
 
-    - name: build
-      working-directory: ./build-${{ matrix.mcu }}
+    - name : Configure & Build
+      working-directory: ./build-${{ matrix.mcu }}-${{ matrix.variant_name }}
       run: |
-        cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTARGET_MCU=${{ matrix.mcu }} ..
-        make -j4
+        cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTARGET_MCU=${{ matrix.mcu }} ${{ matrix.variant_flag }} ..
+        make -j"$(nproc)"
 
-    - name: Upload Artifacts HEX
+    - name : Upload HEX
       uses: actions/upload-artifact@v4
       with:
-        name: "firmware_${{ matrix.mcu }}_HEX"
-        path: ${{runner.workspace}}/OpenPixelOSD/build-${{ matrix.mcu }}/*.hex
+        name: "firmware_${{ matrix.mcu }}${{ matrix.variant_suffix }}_HEX"
+        path: ${{ github.workspace }}/build-${{ matrix.mcu }}-${{ matrix.variant_name }}/*.hex
 
-    - name: Upload Artifacts BIN
+    - name: Upload BIN
       uses: actions/upload-artifact@v4
       with:
-        name: "firmware_${{ matrix.mcu }}_BIN"
-        path: ${{runner.workspace}}/OpenPixelOSD/build-${{ matrix.mcu }}/*.bin
+        name: "firmware_${{ matrix.mcu }}${{ matrix.variant_suffix }}_BIN"
+        path: ${{ github.workspace }}/build-${{ matrix.mcu }}-${{ matrix.variant_name }}/*.bin
