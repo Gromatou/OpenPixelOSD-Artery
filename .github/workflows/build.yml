@@ -12,25 +12,23 @@ jobs:
     strategy:
       matrix:
         include:
-          # ---- STM32G431 ----
           - mcu: STM32G431
-            variant_name: default
             variant_flag: ""
-            variant_suffix: ""
+            job_name: STM32G431
+            artifact_suffix: ""
           - mcu: STM32G431
-            variant_name: VTX
             variant_flag: "-DBUILD_VARIANT=VTX"
-            variant_suffix: "_VTX"
+            job_name: STM32G431_VTX
+            artifact_suffix: "_VTX"
 
-          # ---- STM32G474 ----
           - mcu: STM32G474
-            variant_name: default
             variant_flag: ""
-            variant_suffix: ""
+            job_name: STM32G474
+            artifact_suffix: ""
           - mcu: STM32G474
-            variant_name: VTX
             variant_flag: "-DBUILD_VARIANT=VTX"
-            variant_suffix: "_VTX"
+            job_name: STM32G474_VTX
+            artifact_suffix: "_VTX"
 
     steps:
     - name: Checkout
@@ -45,10 +43,10 @@ jobs:
         release: '14.2.Rel1' # <-- The compiler release to use
 
     - name : Create build directory
-      run: mkdir -p build-${{ matrix.mcu }}-${{ matrix.variant_name }}
+      run: mkdir -p build-${{ matrix.job_name }}
 
     - name : Configure & Build
-      working-directory: ./build-${{ matrix.mcu }}-${{ matrix.variant_name }}
+      working-directory: ./build-${{ matrix.job_name }}
       run: |
         cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTARGET_MCU=${{ matrix.mcu }} ${{ matrix.variant_flag }} ..
         make -j"$(nproc)"
@@ -56,11 +54,11 @@ jobs:
     - name : Upload HEX
       uses: actions/upload-artifact@v4
       with:
-        name: "firmware_${{ matrix.mcu }}${{ matrix.variant_suffix }}_HEX"
-        path: ${{ github.workspace }}/build-${{ matrix.mcu }}-${{ matrix.variant_name }}/*.hex
+        name: "firmware_${{ matrix.job_name }}_HEX"
+        path: ${{ github.workspace }}/build-${{ matrix.job_name }}/*.hex
 
     - name: Upload BIN
       uses: actions/upload-artifact@v4
       with:
-        name: "firmware_${{ matrix.mcu }}${{ matrix.variant_suffix }}_BIN"
-        path: ${{ github.workspace }}/build-${{ matrix.mcu }}-${{ matrix.variant_name }}/*.bin
+        name: "firmware_${{ matrix.job_name }}_BIN"
+        path: ${{ github.workspace }}/build-${{ matrix.job_name }}/*.bin
