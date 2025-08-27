@@ -7,6 +7,7 @@ on: [push, pull_request]
 
 jobs:
   build:
+    name: build (${{ matrix.job_name }})
     runs-on: ubuntu-latest
 
     strategy:
@@ -15,20 +16,16 @@ jobs:
           - mcu: STM32G431
             variant_flag: ""
             job_name: STM32G431
-            artifact_suffix: ""
           - mcu: STM32G431
             variant_flag: "-DBUILD_VARIANT=VTX"
             job_name: STM32G431_VTX
-            artifact_suffix: "_VTX"
 
           - mcu: STM32G474
             variant_flag: ""
             job_name: STM32G474
-            artifact_suffix: ""
           - mcu: STM32G474
             variant_flag: "-DBUILD_VARIANT=VTX"
             job_name: STM32G474_VTX
-            artifact_suffix: "_VTX"
 
     steps:
     - name: Checkout
@@ -54,11 +51,11 @@ jobs:
     - name : Upload HEX
       uses: actions/upload-artifact@v4
       with:
-        name: "firmware_${{ matrix.job_name }}_HEX"
+        name: "OpenPixelOSD_${{ matrix.job_name }}_HEX"
         path: ${{ github.workspace }}/build-${{ matrix.job_name }}/*.hex
 
     - name: Upload BIN
       uses: actions/upload-artifact@v4
       with:
-        name: "firmware_${{ matrix.job_name }}_BIN"
+        name: "OpenPixelOSD_${{ matrix.job_name }}_BIN"
         path: ${{ github.workspace }}/build-${{ matrix.job_name }}/*.bin
